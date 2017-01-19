@@ -25,13 +25,17 @@ var ErrInvalidValue = errors.New("resp: invalid value")
 // so that Encode serializes the string as an Error.
 type Error string
 
-// Pong is a sentinel type used to indicate that the PONG simple string
+// Pong is a sentinel value used to indicate that the PONG simple string
 // value should be encoded.
-type Pong struct{}
+var Pong _pong
 
-// OK is a sentinel type used to indicate that the OK simple string
+type _pong struct{}
+
+// OK is a sentinel value used to indicate that the OK simple string
 // value should be encoded.
-type OK struct{}
+var OK _ok
+
+type _ok struct{}
 
 // SimpleString represents a simple string as defined by the RESP. It
 // cannot contain \r or \n characters. It must be used as a type conversion
@@ -51,10 +55,10 @@ func Encode(w io.Writer, v interface{}) error {
 // encodeValue encodes the value v and writes the serialized data to w.
 func encodeValue(w io.Writer, v interface{}) error {
 	switch v := v.(type) {
-	case OK:
+	case _ok:
 		_, err := w.Write(ok)
 		return err
-	case Pong:
+	case _pong:
 		_, err := w.Write(pong)
 		return err
 	case bool:
