@@ -2,6 +2,7 @@ package resp
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"strconv"
 )
@@ -78,6 +79,8 @@ func encodeValue(w io.Writer, v interface{}) error {
 		default:
 			return encodeInteger(w, v)
 		}
+	case []byte:
+		return encodeBytes(w, v)
 	case string:
 		return encodeBulkString(w, BulkString(v))
 	case BulkString:
@@ -180,5 +183,19 @@ func encodePrefixed(w io.Writer, prefix byte, v string) error {
 	copy(buf[1:], v)
 	copy(buf[len(buf)-2:], "\r\n")
 	_, err := w.Write(buf)
+	return err
+}
+
+func encodeBytes(w io.Writer, b []byte) error {
+	if b == nil {
+		return encodeNil(w)
+	}
+	if _, err := fmt.Fprintf(w, "$%d\r\n", len(b)); err != nil {
+		return err
+	}
+	if _, err := w.Write(b); err != nil {
+		return err
+	}
+	_, err := w.Write([]byte("\r\n"))
 	return err
 }

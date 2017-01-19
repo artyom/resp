@@ -33,6 +33,7 @@ var encodeValidCases = []struct {
 	19: {[]byte("*5\r\n+string\r\n-error\r\n:-2345\r\n$4\r\nallo\r\n*2\r\n$0\r\n\r\n$-1\r\n"),
 		Array{SimpleString("string"), Error("error"), int64(-2345), "allo",
 			Array{"", nil}}, nil},
+	20: {[]byte("$13\r\nHello,\nWorld!\r\n"), []byte("Hello,\nWorld!"), nil},
 }
 
 func TestEncode(t *testing.T) {
